@@ -1,0 +1,8 @@
+# 采集的完整研究快照和 Python 缓存不进入版本管理。
+research/
+__pycache__/
+
+# 系统元数据、运行日志和生成的压缩包可随时重建。
+.DS_Store
+*.log
+*.zip

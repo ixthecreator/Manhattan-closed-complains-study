@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="An interactive study of Manhattan residential noise complaints recorded by NYC 311.">
+  <title>Manhattan closed complains study</title>
+  <!-- 先载入本地图表库，再运行应用；展示使用本地 JSON，无需实时请求数据源。 -->
+  <link rel="stylesheet" href="style.css?v=7">
+  <script src="vendor/chart.umd.js" defer></script>
+  <script src="app.js?v=7" type="module"></script>
+</head>
+<body>
+  <!-- 三种图表共用一个 Canvas；切换类型时由 app.js 销毁并重建 Chart 实例。 -->
+  <main id="stage"><div id="chart-frame"><canvas id="traces"></canvas></div></main>
+  <!-- 首页只保留标签开关和侧栏入口，让默认画面以图形为主。 -->
+  <nav class="instrument">
+    <button id="guides-button" data-action="guides"><svg viewBox="0 0 24 24"><path d="M5 4v15h15M9 15h2m3-4h2m-7-4h2"/></svg></button>
+    <button id="study-button" data-action="study"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+  </nav>
+  <!-- 侧栏容纳单条记录、样本信息和图表控件，初始隐藏。 -->
+  <aside id="drawer" hidden>
+    <div class="drawer-top"><button id="close-button"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+    <div class="drawer-tabs"><button data-tab="record">Record</button><button data-tab="study" class="active">Study</button><button data-tab="controls">View</button></div>
+    <!-- 保留官方回复原文；摘要只用于阅读，不改变源数据。 -->
+    <section id="record-panel" hidden>
+      <div class="record-number"><span id="record-position"></span><span id="record-id"></span></div>
+      <div class="record-navigation"><button id="previous-record">← Previous</button><button id="next-record">Next →</button></div>
+      <div class="record-summary"><div id="record-duration" class="duration-value"></div><span class="status-word">Closed</span></div>
+      <p class="small-muted">Time to closure</p>
+      <dl class="facts"><div><dt>Submitted</dt><dd id="record-created"></dd></div><div><dt>Closed</dt><dd id="record-closed"></dd></div><div><dt>Problem detail</dt><dd id="record-detail"></dd></div></dl>
+      <div class="section-heading">Official response</div>
+      <p id="reply-summary"></p>
+      <p id="reply-condition" hidden></p>
+      <details class="response-source"><summary>Full response</summary><blockquote id="record-response"></blockquote></details>
+      <button id="same-reply-button" class="text-button"></button>
+      <p class="record-limit">The response records the agency’s account. The resident’s outcome is unknown.</p>
+    </section>
+    <!-- 呈现固定样本的背景、统计和数据来源。 -->
+    <section id="study-panel">
+      <h1>Manhattan closed complains study</h1>
+      <p>Manhattan · Residential noise<br>September 2026</p>
+      <p>Each line runs from submission to recorded closure. Zero is each request’s own closure time. The dataset does not record what happened afterward.</p>
+      <dl id="sample-stats" class="facts"></dl>
+      <p id="finding" class="finding"></p>
+      <div class="section-heading">Sample</div>
+      <p id="method"></p>
+      <div class="study-links"><a href="https://data.cityofnewyork.us/Social-Services/311-Service-Requests-from-2020-to-Present/erm2-nwe9" target="_blank" rel="noreferrer">Source ↗</a><a href="data/requests.json" download>Data ↓</a></div>
+      <p class="credit">NYC 311 data</p>
+    </section>
+    <!-- 控件改变 state 后交给 rebuild() 重绘；时间线专属控件会在其他视图隐藏。 -->
+    <section id="controls-panel" hidden>
+      <h2>View</h2>
+      <label class="control-label" for="view-select">Chart</label><select id="view-select"><option value="trace">Waiting time</option><option value="scatter">Submission date</option><option value="replies">Official responses</option></select>
+      <label class="control-label" for="reply-filter">Official response</label><select id="reply-filter"></select>
+      <div id="order-control"><label class="control-label" for="order-select">Order</label><select id="order-select"><option value="submitted">Submission time</option><option value="duration">Closure duration</option><option value="reply">Official response</option></select></div>
+      <div id="scale-control"><label class="control-label" for="scale-select">Time scale</label><select id="scale-select"><option value="compressed">Compressed · log(1 + hours)</option><option value="linear">Linear · hours</option></select></div>
+      <div class="toggle-row"><span>Chart labels</span><input id="guides-input" type="checkbox"></div>
+      <div id="align-control" class="toggle-row"><span>Align at closure</span><input id="align-input" type="checkbox" checked></div>
+      <p id="view-count" class="small-muted"></p>
+      <button id="reset-button" class="wide-button">Reset</button>
+      <button id="export-button" class="wide-button">Save PNG ↓</button>
+    </section>
+  </aside>
+</body>
+</html>

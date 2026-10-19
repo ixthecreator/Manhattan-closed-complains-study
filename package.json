@@ -1,0 +1,10 @@
+{
+  "name": "closed-study",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An exploratory Chart.js study of administrative closure in NYC 311 records.",
+  "scripts": {
+    "dev": "python3 -m http.server 8781 --bind 127.0.0.1"
+  }
+}
